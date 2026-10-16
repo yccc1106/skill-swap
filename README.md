@@ -10,7 +10,7 @@ https://yccc1106.github.io/skill-swap/
 
 ## 用 IDEA 打开与运行
 
-直接在 IntelliJ IDEA 中打开本目录：/Users/yuanchengle/code/skill-swap。项目是 React + Vite 前端，不需要 Java、数据库或 SofEng 服务。
+直接在 IntelliJ IDEA 中打开本目录：/Users/yuanchengle/code/skill-swap。项目是 React + Vite 前端，不依赖 SofEng 的 Java 服务。游客演示无需数据库；真实账号和私聊需要 Supabase 项目。
 
     corepack enable
     pnpm install --frozen-lockfile
@@ -28,10 +28,16 @@ https://yccc1106.github.io/skill-swap/
 
 页面采用 Hash 路由，适配 GitHub Pages 静态托管。带 /#/matches 的页面地址可以直接打开和刷新。
 
+## 真实互换
+
+新增“真实互换”入口：邮箱注册登录、云端技能卡、真实用户的双向匹配、一对一私聊和实时消息。数据库采用行级权限控制，仅聊天双方能读写消息。完整接入与部署步骤见 [CLOUD_SETUP.md](CLOUD_SETUP.md)。
+
+未配置 Supabase 时，真实入口会显示“正在接入”，游客演示继续可用。正式 Supabase 项目已配置数据库、权限、邮箱验证及站点回跳；本地数据库已运行双账号实时收发和第三方隔离验证，可用 `pnpm test:live` 在已启动的本地 Supabase 上复测。正式环境的双账号验收状态以部署记录为准。
+
 ## 数据边界
 
-人物为虚构的演示案例。用户发布的技能卡和交换意向仅保存在当前浏览器的 localStorage，不会同步到其他设备、通知演示人物或发送真实消息。匹配依据是明确的双向技能标签规则，不是 AI 模型。
+游客演示中的人物为虚构案例，演示技能卡和交换意向保存在当前浏览器的 localStorage，不会通知演示人物。真实互换入口只展示真实注册用户，技能卡、会话和消息保存在 Supabase，可跨设备同步；浏览器只保存登录会话。两种模式的用户和数据不会混用。匹配依据是明确的双向技能标签规则，不是 AI 模型。
 
 ## 部署
 
-main 分支每次推送后，.github/workflows/deploy.yml 使用 GitHub Actions 构建并部署到 GitHub Pages。Vite 的 base 固定为 /skill-swap/。不要重命名或转移仓库，否则已提交的访问地址可能改变。
+main 分支每次推送后，.github/workflows/deploy.yml 使用 GitHub Actions 构建并部署到 GitHub Pages。Vite 的 base 固定为 /skill-swap/。Actions Variables 已设置 `VITE_SUPABASE_URL` 与 `VITE_SUPABASE_PUBLISHABLE_KEY`。每次发布后检查原地址的公开访问、游客演示、注册及私聊；不要重命名或转移仓库，否则已提交的访问地址可能改变。
