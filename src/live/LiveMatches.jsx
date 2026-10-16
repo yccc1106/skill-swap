@@ -3,8 +3,11 @@ import { ArrowRight, RefreshCw, Sparkles } from "lucide-react";
 import { supabase } from "./supabase";
 
 export function matchingSkills(me, other) {
-  const youTeach = me.teach.filter((skill) => other.learn.includes(skill));
-  const theyTeach = other.teach.filter((skill) => me.learn.includes(skill));
+  const normalize = (skill) => skill.trim().toLowerCase();
+  const theirWishes = new Set(other.learn.map(normalize));
+  const myWishes = new Set(me.learn.map(normalize));
+  const youTeach = me.teach.filter((skill) => theirWishes.has(normalize(skill)));
+  const theyTeach = other.teach.filter((skill) => myWishes.has(normalize(skill)));
   return {
     youTeach,
     theyTeach,

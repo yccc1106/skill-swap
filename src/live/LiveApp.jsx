@@ -108,14 +108,16 @@ function AuthForm() {
 }
 
 function splitSkills(value) {
-  return [
-    ...new Set(
-      value
-        .split(/[，,、\n]/)
-        .map((part) => part.trim())
-        .filter(Boolean),
-    ),
-  ];
+  const seen = new Set();
+  return value
+    .split(/[，,、\n]/)
+    .map((part) => part.trim())
+    .filter((skill) => {
+      const key = skill.toLowerCase();
+      if (!skill || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 }
 
 function ProfileForm({ user, current, onSaved }) {
@@ -149,7 +151,8 @@ function ProfileForm({ user, current, onSaved }) {
       setError("每个方向最多 8 项，每项不超过 24 个字。");
       return;
     }
-    if (teach.some((skill) => learn.includes(skill))) {
+    const wanted = new Set(learn.map((skill) => skill.toLowerCase()));
+    if (teach.some((skill) => wanted.has(skill.toLowerCase()))) {
       setError("同一项技能不能同时放在两个方向。");
       return;
     }
@@ -181,7 +184,7 @@ function ProfileForm({ user, current, onSaved }) {
     <section className="live-card live-profile-form">
       <div className="live-eyebrow">YOUR REAL PROFILE</div>
       <h2>{current ? "编辑真实技能卡" : "发布真实技能卡"}</h2>
-      <p>已登录用户可以看到这张卡。技能用逗号分隔，匹配按完整技能名称计算。</p>
+      <p>已登录用户可以看到这张卡。技能用逗号分隔，英文技能名匹配时不区分大小写。</p>
       <form className="live-form" onSubmit={submit}>
         <label htmlFor="real-name">称呼</label>
         <input
