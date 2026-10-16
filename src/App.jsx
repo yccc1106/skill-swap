@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import LiveApp from "./live/LiveApp";
+import ProjectAbout from "./ProjectAbout";
 import {
   ArrowDownRight,
   ArrowLeft,
@@ -1190,14 +1191,19 @@ function App() {
         <div className="container">
           <Sparkles size={14} />
           <span>
-            {route === "/live"
+            {route === "/about"
+              ? "项目说明 · 已实现功能、技术方案与 AI 下一步"
+              : route === "/live"
               ? "真实互换：账号、技能卡和私聊使用云端存储；游客仍可体验本地演示"
               : "作品演示版 · 人物为虚构示例，发布与申请数据仅保存在当前浏览器"}
           </span>
+          <button className="demo-bar-link" onClick={() => navigate("/about")}>查看项目说明 <ArrowRight size={13} /></button>
         </div>
       </div>
       {route === "/live" ? (
         <LiveApp />
+      ) : route === "/about" ? (
+        <ProjectAbout />
       ) : route === "/" ? (
         <main id="main-content" tabIndex={-1}>
           <Hero profile={profile} />
@@ -1243,6 +1249,7 @@ function App() {
             <button onClick={() => navigate("/publish")}>发布技能</button>
             <button onClick={() => navigate("/matches")}>我的匹配</button>
             <button onClick={() => navigate("/live")}>真实互换</button>
+            <button onClick={() => navigate("/about")}>项目说明</button>
           </div>
         </div>
         <div className="container footer-bottom">
