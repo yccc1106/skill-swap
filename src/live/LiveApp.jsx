@@ -52,6 +52,9 @@ function AuthForm() {
       <div className="live-eyebrow">REAL EXCHANGE</div>
       <h1>{isRegister ? "创建账号，开始互教" : "登录真实互换"}</h1>
       <p>注册后发布技能卡，找到真实用户并在这里一对一交流。</p>
+      {isRegister && (
+        <p className="live-auth-footnote">体验期注册后即可使用，暂不验证邮箱归属。</p>
+      )}
       <form className="live-form" onSubmit={submit}>
         <label htmlFor="live-email">邮箱</label>
         <input
