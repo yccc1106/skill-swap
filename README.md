@@ -28,11 +28,11 @@ https://yccc1106.github.io/skill-swap/
 
 页面采用 Hash 路由，适配 GitHub Pages 静态托管。带 /#/matches 的页面地址可以直接打开和刷新。
 
-## 真实互换（开发分支）
+## 真实互换
 
 新增“真实互换”入口：邮箱注册登录、云端技能卡、真实用户的双向匹配、一对一私聊和实时消息。数据库采用行级权限控制，仅聊天双方能读写消息。完整接入与部署步骤见 [CLOUD_SETUP.md](CLOUD_SETUP.md)。
 
-未配置 Supabase 时，真实入口会显示“正在接入”，游客演示继续可用。**目前固定公开链接仍运行已部署的演示版；真实版尚未接入线上云端项目，也未发布到 main。** 本地数据库已运行双账号实时收发和第三方隔离验证，可用 `pnpm test:live` 在已启动的本地 Supabase 上复测。
+未配置 Supabase 时，真实入口会显示“正在接入”，游客演示继续可用。正式 Supabase 项目已配置数据库、权限、邮箱验证及站点回跳；本地数据库已运行双账号实时收发和第三方隔离验证，可用 `pnpm test:live` 在已启动的本地 Supabase 上复测。正式环境的双账号验收状态以部署记录为准。
 
 ## 数据边界
 
@@ -40,4 +40,4 @@ https://yccc1106.github.io/skill-swap/
 
 ## 部署
 
-main 分支每次推送后，.github/workflows/deploy.yml 使用 GitHub Actions 构建并部署到 GitHub Pages。Vite 的 base 固定为 /skill-swap/。真实版上线时在 Actions Variables 中设置 `VITE_SUPABASE_URL` 与 `VITE_SUPABASE_PUBLISHABLE_KEY`，先完成双账号和公开访问检查，再合入 main。不要重命名或转移仓库，否则已提交的访问地址可能改变。
+main 分支每次推送后，.github/workflows/deploy.yml 使用 GitHub Actions 构建并部署到 GitHub Pages。Vite 的 base 固定为 /skill-swap/。Actions Variables 已设置 `VITE_SUPABASE_URL` 与 `VITE_SUPABASE_PUBLISHABLE_KEY`。每次发布后检查原地址的公开访问、游客演示、注册及私聊；不要重命名或转移仓库，否则已提交的访问地址可能改变。
