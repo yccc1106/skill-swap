@@ -439,15 +439,20 @@ function Hero({ profile }) {
 function Explore({ profile }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("全部");
+  const [mutualOnly, setMutualOnly] = useState(false);
   const filtered = people.filter((person) => {
     const matchesText =
       `${person.name} ${person.title} ${person.teach.join(" ")} ${person.learn.join(" ")}`
         .toLowerCase()
         .includes(query.trim().toLowerCase());
-    return matchesText && (filter === "全部" || person.teach.includes(filter));
+    return (
+      matchesText &&
+      (filter === "全部" || person.teach.includes(filter)) &&
+      (!mutualOnly || getMatch(profile, person).mutual)
+    );
   });
   return (
-    <main className="page container">
+    <main id="main-content" tabIndex={-1} className="page container">
       <div className="page-heading">
         <div className="section-kicker">SKILL MARKET</div>
         <h1>
@@ -487,6 +492,7 @@ function Explore({ profile }) {
                 className={
                   filter === item ? "filter-chip active" : "filter-chip"
                 }
+                aria-pressed={filter === item}
                 onClick={() => setFilter(item)}
               >
                 {item}
@@ -494,6 +500,17 @@ function Explore({ profile }) {
             ),
           )}
         </div>
+        <button
+          className={
+            mutualOnly
+              ? "filter-chip mutual-filter active"
+              : "filter-chip mutual-filter"
+          }
+          aria-pressed={mutualOnly}
+          onClick={() => setMutualOnly(!mutualOnly)}
+        >
+          <Sparkles size={14} /> 只看双向匹配
+        </button>
       </div>
       <div className="result-header">
         <strong>找到 {filtered.length} 位伙伴</strong>
@@ -509,12 +526,16 @@ function Explore({ profile }) {
         <div className="empty-state">
           <Search size={34} />
           <h2>暂时没有找到对应的人</h2>
-          <p>试试其他关键词，或者先发布你的技能。</p>
+          <p>当前筛选条件下没有结果。清除条件，看看更多可以交换的技能。</p>
           <button
             className="button button-primary"
-            onClick={() => navigate("/publish")}
+            onClick={() => {
+              setQuery("");
+              setFilter("全部");
+              setMutualOnly(false);
+            }}
           >
-            发布技能 <ArrowRight size={16} />
+            清除筛选 <ArrowRight size={16} />
           </button>
         </div>
       )}
@@ -533,7 +554,7 @@ function SkillInput({ label, value, onChange, kind, helper }) {
   return (
     <div className="form-group">
       <div className="form-label-row">
-        <label>
+        <label htmlFor={`skill-${kind}`}>
           {label} <span>*</span>
         </label>
         <small>最多 6 项</small>
@@ -555,6 +576,7 @@ function SkillInput({ label, value, onChange, kind, helper }) {
       </div>
       <div className="skill-input">
         <input
+          id={`skill-${kind}`}
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={(event) => {
@@ -566,7 +588,11 @@ function SkillInput({ label, value, onChange, kind, helper }) {
           placeholder="输入技能后按回车添加"
           maxLength={24}
         />
-        <button type="button" onClick={() => add(draft)} aria-label="添加技能">
+        <button
+          type="button"
+          onClick={() => add(draft)}
+          aria-label={`添加${label}技能`}
+        >
           <Plus size={18} />
         </button>
       </div>
@@ -620,7 +646,7 @@ function Publish({ profile, setProfile, hasSaved }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   return (
-    <main className="page container">
+    <main id="main-content" tabIndex={-1} className="page container">
       <div className="page-heading">
         <div className="section-kicker">YOUR SKILLS</div>
         <h1>
@@ -757,11 +783,20 @@ function Publish({ profile, setProfile, hasSaved }) {
 }
 
 function Matches({ profile, hasSaved }) {
-  const matched = people
-    .map((person) => ({ person, match: getMatch(profile, person) }))
-    .filter((item) => item.match.mutual);
+  const candidates = people.map((person) => ({
+    person,
+    match: getMatch(profile, person),
+  }));
+  const matched = candidates.filter((item) => item.match.mutual);
+  const closeMatches = candidates
+    .filter(
+      (item) =>
+        !item.match.mutual &&
+        (item.match.youTeach.length || item.match.theyTeach.length),
+    )
+    .slice(0, 2);
   return (
-    <main className="page container">
+    <main id="main-content" tabIndex={-1} className="page container">
       <div className="page-heading">
         <div className="section-kicker">A GOOD EXCHANGE</div>
         <h1>
@@ -789,6 +824,24 @@ function Matches({ profile, hasSaved }) {
         >
           {hasSaved ? "编辑技能卡" : "发布我的技能"} <ArrowUpRight size={16} />
         </button>
+      </div>
+      <div className="match-rule">
+        <div className="match-rule-title">
+          <Sparkles size={18} />
+          <strong>为什么是双向匹配？</strong>
+        </div>
+        <div className="match-rule-steps">
+          <span>
+            <CheckCircle2 size={16} /> 你能教 TA 想学的
+          </span>
+          <span>
+            <CheckCircle2 size={16} /> TA 能教你想学的
+          </span>
+        </div>
+        <p>
+          两个条件同时成立才会出现在这里。这里展示的是可解释的技能标签规则，不是
+          AI 匹配分数。
+        </p>
       </div>
       <div className="result-header">
         <strong>{matched.length} 组双向匹配</strong>
@@ -839,25 +892,52 @@ function Matches({ profile, hasSaved }) {
           ))}
         </div>
       ) : (
-        <div className="empty-state">
-          <Sparkles size={36} />
-          <h2>还没有双向匹配</h2>
-          <p>试着增加一项你能教或想学的技能，也可以去技能广场看看大家。</p>
-          <div className="empty-actions">
-            <button
-              className="button button-primary"
-              onClick={() => navigate("/publish")}
-            >
-              调整技能卡 <ArrowRight size={16} />
-            </button>
-            <button
-              className="button button-outline"
-              onClick={() => navigate("/explore")}
-            >
-              逛逛广场
-            </button>
+        <>
+          <div className="empty-state">
+            <Sparkles size={36} />
+            <h2>暂时没有双向匹配</h2>
+            <p>试着增加一项你能教或想学的技能，匹配结果会随技能卡更新。</p>
+            <div className="empty-actions">
+              <button
+                className="button button-primary"
+                onClick={() => navigate("/publish")}
+              >
+                调整技能卡 <ArrowRight size={16} />
+              </button>
+              <button
+                className="button button-outline"
+                onClick={() => navigate("/explore")}
+              >
+                逛逛广场
+              </button>
+            </div>
           </div>
-        </div>
+          {closeMatches.length > 0 && (
+            <section className="close-matches">
+              <h2>还可以看看这些伙伴</h2>
+              <p>你们目前只有一个方向的技能对应，也许能给你一些新的灵感。</p>
+              <div className="close-match-list">
+                {closeMatches.map(({ person, match }) => (
+                  <button
+                    key={person.id}
+                    onClick={() => navigate(`/exchange/${person.id}`)}
+                  >
+                    <Avatar person={person} size="small" />
+                    <span>
+                      <strong>{person.name}</strong>
+                      <small>
+                        {match.youTeach.length
+                          ? `你能教 TA：${match.youTeach.join("、")}`
+                          : `TA 能教你：${match.theyTeach.join("、")}`}
+                      </small>
+                    </span>
+                    <ArrowUpRight size={18} />
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+        </>
       )}
     </main>
   );
@@ -865,12 +945,16 @@ function Matches({ profile, hasSaved }) {
 
 function Exchange({ person, profile, requests, setRequests }) {
   const match = getMatch(profile, person);
-  const requested = requests.includes(person.id);
+  const requested = match.mutual && requests.includes(person.id);
   const request = () => {
-    if (!requested) setRequests([...requests, person.id]);
+    if (match.mutual && !requested) setRequests([...requests, person.id]);
   };
   return (
-    <main className="page container exchange-page">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="page container exchange-page"
+    >
       <button
         className="back-link"
         onClick={() => navigate(match.mutual ? "/matches" : "/explore")}
@@ -882,7 +966,7 @@ function Exchange({ person, profile, requests, setRequests }) {
           <div className="detail-person">
             <Avatar person={person} size="large" />
             <div>
-              <span className="tiny-label">交换伙伴 · 演示人物</span>
+              <span className="tiny-label">技能伙伴 · 演示人物</span>
               <h1>{person.name}</h1>
               <p>{person.title}</p>
               <span className="detail-location">
@@ -920,13 +1004,35 @@ function Exchange({ person, profile, requests, setRequests }) {
           <div className="detail-advice">
             <Lightbulb size={20} />
             <div>
-              <strong>交换小建议</strong>
+              <strong>交流小建议</strong>
               <p>
                 先说清各自想达成的小目标，再商量交流时间和方式。一次 30
                 分钟的体验，也可能是很好的开始。
               </p>
             </div>
           </div>
+          {match.mutual && (
+            <div className="first-session">
+              <h2>第一次交换，可以这样开始</h2>
+              <div className="session-steps">
+                <div>
+                  <span>01</span>
+                  <strong>说目标</strong>
+                  <p>各自说一个想完成的小成果。</p>
+                </div>
+                <div>
+                  <span>02</span>
+                  <strong>定方式</strong>
+                  <p>商量线上或线下、时长和时间。</p>
+                </div>
+                <div>
+                  <span>03</span>
+                  <strong>互相教</strong>
+                  <p>轮流分享，再约定下一次练习。</p>
+                </div>
+              </div>
+            </div>
+          )}
         </section>
         <aside className="exchange-panel">
           <div className="panel-kicker">
@@ -969,12 +1075,19 @@ function Exchange({ person, profile, requests, setRequests }) {
                 <span>此演示仅保存在当前浏览器，尚未通知对方。</span>
               </div>
             </div>
-          ) : (
+          ) : match.mutual ? (
             <button
               className="button button-primary button-wide"
               onClick={request}
             >
               <Send size={17} /> 发起交换意向
+            </button>
+          ) : (
+            <button
+              className="button button-outline button-wide"
+              onClick={() => navigate("/publish")}
+            >
+              调整我的技能卡 <ArrowRight size={17} />
             </button>
           )}
           <p className="panel-footnote">
@@ -1002,6 +1115,9 @@ function App() {
     const onHashChange = () => {
       setRoute(currentRoute());
       setMobileMenu(false);
+      requestAnimationFrame(() =>
+        document.getElementById("main-content")?.focus(),
+      );
     };
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
@@ -1029,6 +1145,12 @@ function App() {
   ];
   return (
     <div className="site-shell">
+      <button
+        className="skip-link"
+        onClick={() => document.getElementById("main-content")?.focus()}
+      >
+        跳转到主要内容
+      </button>
       <header className="site-header">
         <div className="container header-inner">
           <Logo />
@@ -1040,6 +1162,7 @@ function App() {
               <button
                 key={item.path}
                 className={route === item.path ? "nav-item active" : "nav-item"}
+                aria-current={route === item.path ? "page" : undefined}
                 onClick={() => navigate(item.path)}
               >
                 {item.label}
@@ -1070,7 +1193,9 @@ function App() {
         </div>
       </div>
       {route === "/" ? (
-        <Hero profile={profile} />
+        <main id="main-content" tabIndex={-1}>
+          <Hero profile={profile} />
+        </main>
       ) : route === "/explore" ? (
         <Explore profile={profile} />
       ) : route === "/publish" ? (
@@ -1089,7 +1214,7 @@ function App() {
           setRequests={setRequests}
         />
       ) : (
-        <main className="page container">
+        <main id="main-content" tabIndex={-1} className="page container">
           <div className="empty-state">
             <h1>没有找到这个页面</h1>
             <button
@@ -1118,7 +1243,7 @@ function App() {
           <span>用你的擅长，换一次想学。</span>
         </div>
       </footer>
-      <div className="mobile-bottom-nav">
+      <nav className="mobile-bottom-nav" aria-label="移动端导航">
         <button
           className={route === "/" ? "active" : ""}
           onClick={() => navigate("/")}
@@ -1147,7 +1272,7 @@ function App() {
           <HeartHandshake size={19} />
           匹配
         </button>
-      </div>
+      </nav>
     </div>
   );
 }

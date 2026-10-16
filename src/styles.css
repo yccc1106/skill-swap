@@ -1824,3 +1824,252 @@ textarea.text-input {
     font-size: 23px;
   }
 }
+
+/* Iteration: clearer matching guidance and more comfortable keyboard/touch use. */
+button,
+select {
+  touch-action: manipulation;
+}
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid #9c83ee;
+  outline-offset: 3px;
+}
+main:focus {
+  outline: none;
+}
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: -60px;
+  z-index: 100;
+  background: #292d3a;
+  color: #fff;
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 15px;
+  font-weight: 700;
+}
+.skip-link:focus {
+  top: 12px;
+}
+.filter-wrap {
+  flex-wrap: wrap;
+}
+.filter-chip {
+  min-height: 40px;
+}
+.mutual-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.person-meta p,
+.skill-label,
+.tag,
+.card-bottom > span:first-child,
+.mutual-pill {
+  font-size: 12px;
+}
+.person-meta p,
+.card-bottom > span:first-child,
+.close-match-list small {
+  color: #686d79;
+}
+.mutual-pill {
+  color: #2c704e;
+}
+.tag-learn {
+  color: #8d553b;
+}
+.page-heading p,
+.result-header span,
+.match-subtitle {
+  color: #707581;
+}
+.match-rule {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 13px 24px;
+  margin: 0 0 34px;
+  padding: 19px 22px;
+  border: 1px solid #e5e0f7;
+  border-radius: 15px;
+  background: #f7f4ff;
+}
+.match-rule-title,
+.match-rule-steps,
+.match-rule-steps span {
+  display: flex;
+  align-items: center;
+}
+.match-rule-title {
+  gap: 8px;
+  color: #664ec2;
+  font-size: 14px;
+}
+.match-rule-steps {
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.match-rule-steps span {
+  gap: 5px;
+  padding: 7px 9px;
+  border-radius: 7px;
+  background: #fff;
+  color: #5f537f;
+  font-size: 12px;
+  font-weight: 700;
+}
+.match-rule-steps svg {
+  color: #59a579;
+}
+.match-rule p {
+  width: 100%;
+  margin: 0;
+  color: #7d7690;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.close-matches {
+  margin-top: 32px;
+}
+.close-matches h2 {
+  font-size: 19px;
+  margin-bottom: 5px;
+}
+.close-matches > p {
+  font-size: 13px;
+  color: #8c8d98;
+  margin-bottom: 15px;
+}
+.close-match-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.close-match-list > button {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  padding: 13px;
+  border-radius: 12px;
+  border: 1px solid #e9e6f0;
+  background: #fff;
+  text-align: left;
+}
+.close-match-list > button:hover {
+  border-color: #b9acec;
+}
+.close-match-list > button > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.close-match-list strong,
+.close-match-list small {
+  display: block;
+}
+.close-match-list strong {
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+.close-match-list small {
+  color: #92939c;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.close-match-list svg:last-child {
+  color: #8e78d4;
+}
+.first-session {
+  border-top: 1px solid #f0eef1;
+  margin-top: 28px;
+  padding-top: 27px;
+}
+.first-session h2 {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+.session-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+.session-steps > div {
+  border: 1px solid #ece9f3;
+  border-radius: 10px;
+  padding: 13px;
+  background: #fcfbff;
+}
+.session-steps span {
+  display: block;
+  color: #8e79d5;
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 9px;
+}
+.session-steps strong {
+  font-size: 13px;
+}
+.session-steps p {
+  color: #92929d;
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 5px 0 0;
+}
+.selected-tag button,
+.skill-input button,
+.search-box button {
+  min-width: 28px;
+  min-height: 28px;
+}
+@media (max-width: 760px) {
+  .filter-wrap {
+    align-items: flex-start;
+  }
+  .mobile-bottom-nav button {
+    min-height: 46px;
+    justify-content: center;
+  }
+  .close-match-list {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 460px) {
+  .session-steps {
+    grid-template-columns: 1fr;
+  }
+  .session-steps > div {
+    display: grid;
+    grid-template-columns: 32px 60px 1fr;
+    align-items: center;
+    gap: 6px;
+  }
+  .session-steps span,
+  .session-steps p {
+    margin: 0;
+  }
+  .empty-actions {
+    flex-direction: column;
+  }
+  .empty-actions .button {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
