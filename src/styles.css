@@ -191,6 +191,22 @@ a {
   min-height: 29px;
   text-align: center;
 }
+.demo-bar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: none;
+  color: #5c41c4;
+  font-size: inherit;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.demo-bar-link:hover {
+  color: #382394;
+}
 .hero {
   min-height: 600px;
   display: grid;
@@ -1586,6 +1602,7 @@ textarea.text-input {
     font-size: 10px;
     line-height: 1.4;
     padding: 6px 0;
+    flex-wrap: wrap;
   }
   .hero {
     display: block;
