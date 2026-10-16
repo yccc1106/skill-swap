@@ -5,10 +5,14 @@ import { supabase } from "./supabase";
 function pair(a, b) {
   return [a, b].sort();
 }
-function rememberMessage(list, incoming) {
-  return list.some((item) => item.id === incoming.id)
-    ? list
-    : [...list, incoming];
+function rememberMessages(list, incoming) {
+  const byId = new Map(list.map((message) => [message.id, message]));
+  for (const message of incoming) byId.set(message.id, message);
+  return [...byId.values()].sort(
+    (left, right) =>
+      new Date(left.created_at) - new Date(right.created_at) ||
+      left.id.localeCompare(right.id),
+  );
 }
 
 export function LiveInbox({ user, onOpenChat }) {
@@ -171,7 +175,7 @@ export default function LiveChat({ user, peer, onBack }) {
       .limit(100)
       .then(({ data, error: loadError }) => {
         if (!active) return;
-        setMessages((data ?? []).reverse());
+        setMessages((old) => rememberMessages(old, data ?? []));
         setError(loadError ? `读取消息失败：${loadError.message}` : "");
         setLoading(false);
       });
@@ -184,6 +188,17 @@ export default function LiveChat({ user, peer, onBack }) {
     if (!conversation) return;
     const channel = supabase
       .channel(`skill-chat-${conversation.id}`)
+      .on("system", "*", (payload) => {
+        if (
+          payload.extension === "postgres_changes" &&
+          payload.status === "ok"
+        ) {
+          setConnection("实时已连接");
+          // The channel can report SUBSCRIBED before changes are streamed.
+          // Read once more after the database listener is ready to fill that gap.
+          setRefresh((n) => n + 1);
+        }
+      })
       .on(
         "postgres_changes",
         {
@@ -192,12 +207,12 @@ export default function LiveChat({ user, peer, onBack }) {
           table: "skill_messages",
           filter: `conversation_id=eq.${conversation.id}`,
         },
-        (payload) => setMessages((old) => rememberMessage(old, payload.new)),
+        (payload) => setMessages((old) => rememberMessages(old, [payload.new])),
       )
       .subscribe((status) =>
         setConnection(
           status === "SUBSCRIBED"
-            ? "实时已连接"
+            ? "同步消息中…"
             : status === "CHANNEL_ERROR" || status === "TIMED_OUT"
               ? "连接中断，可刷新消息"
               : "连接中…",
@@ -231,7 +246,7 @@ export default function LiveChat({ user, peer, onBack }) {
     if (sendError) setError(`发送失败：${sendError.message}`);
     else {
       setDraft("");
-      setMessages((old) => rememberMessage(old, data));
+      setMessages((old) => rememberMessages(old, [data]));
     }
   }
 
