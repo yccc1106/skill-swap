@@ -79,7 +79,7 @@ export default function ProjectAbout() {
           ))}
         </div>
         <p className="project-about-note">
-          当前匹配由双方技能标签决定，英文大小写不影响比较。云端消息历史已接入；实时消息推送仍在正式环境验收。
+          当前匹配由双方技能标签决定，英文大小写不影响比较。私聊消息保存在云端，并已通过两个独立账号验证实时收发与历史读取。
         </p>
       </section>
 
@@ -92,7 +92,7 @@ export default function ProjectAbout() {
           </div>
           <div className="project-about-stack">
             <div><strong>前端与部署</strong><span>React + Vite · GitHub Pages</span><p>响应式页面使用 Hash 路由，刷新后仍能回到原页面。每次迭代都发布到同一域名。</p></div>
-            <div><strong>账号与数据</strong><span>Supabase Auth + PostgreSQL</span><p>真实用户的技能卡、会话与消息保存在云端；行级权限限制私聊只对双方可见。</p></div>
+            <div><strong>账号与数据</strong><span>Supabase Auth + PostgreSQL + Realtime</span><p>真实用户的技能卡、会话与消息保存在云端；行级权限限制私聊只对双方可见，实时订阅同步新消息。</p></div>
             <div><strong>匹配逻辑</strong><span>双向技能规则</span><p>双方“能教”各自覆盖对方“想学”时才可私聊，数据库会再次校验匹配关系。</p></div>
           </div>
         </div>
