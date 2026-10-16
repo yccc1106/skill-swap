@@ -1720,7 +1720,7 @@ textarea.text-input {
     right: 0;
     bottom: 0;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     background: #fff;
     border-top: 1px solid #eae8ed;
     padding: 9px 0 max(8px, env(safe-area-inset-bottom));

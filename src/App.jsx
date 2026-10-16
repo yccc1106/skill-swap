@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import LiveApp from "./live/LiveApp";
 import {
   ArrowDownRight,
   ArrowLeft,
@@ -1142,6 +1143,7 @@ function App() {
     { path: "/", label: "首页" },
     { path: "/explore", label: "技能广场" },
     { path: "/matches", label: "我的匹配" },
+    { path: "/live", label: "真实互换" },
   ];
   return (
     <div className="site-shell">
@@ -1192,7 +1194,9 @@ function App() {
           </span>
         </div>
       </div>
-      {route === "/" ? (
+      {route === "/live" ? (
+        <LiveApp />
+      ) : route === "/" ? (
         <main id="main-content" tabIndex={-1}>
           <Hero profile={profile} />
         </main>
@@ -1236,6 +1240,7 @@ function App() {
             <button onClick={() => navigate("/explore")}>技能广场</button>
             <button onClick={() => navigate("/publish")}>发布技能</button>
             <button onClick={() => navigate("/matches")}>我的匹配</button>
+            <button onClick={() => navigate("/live")}>真实互换</button>
           </div>
         </div>
         <div className="container footer-bottom">
@@ -1271,6 +1276,13 @@ function App() {
         >
           <HeartHandshake size={19} />
           匹配
+        </button>
+        <button
+          className={route === "/live" ? "active" : ""}
+          onClick={() => navigate("/live")}
+        >
+          <MessageCircle size={19} />
+          实时
         </button>
       </nav>
     </div>
