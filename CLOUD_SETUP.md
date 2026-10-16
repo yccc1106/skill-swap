@@ -11,6 +11,18 @@
 5. 分别用两个真实邮箱注册账号，完成邮箱验证，给两个账号发布互补的技能卡，检查彼此可见、双向匹配、聊天即时到达和刷新后消息仍在。
 6. 在另一账号直接查询不属于自己的聊天，必须被 RLS 拒绝或返回空结果。完成检查后，把相同的两个公开值加入 GitHub 仓库的 Actions Variables，再触发原有 Pages workflow。部署后在原地址复查。
 
+## 本地自动验收
+
+已安装 Docker 的开发机可运行：
+
+```sh
+pnpm dlx supabase start --exclude studio,imgproxy,edge-runtime,logflare,vector
+pnpm test:live
+pnpm dlx supabase stop
+```
+
+测试会在本地 Supabase 中创建三个临时账号，验证双向匹配建会话、实时收发、历史消息与第三方隔离。不要把此测试指向正式项目。
+
 ## 数据边界
 
 - 游客可继续体验原有虚构人物与浏览器本地演示，演示人物不会接收真实消息。
