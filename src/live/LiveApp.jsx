@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, CheckCircle2, LogOut, RefreshCw, Users } from "lucide-react";
 import { cloudConfigured, supabase } from "./supabase";
+import LiveMatches from "./LiveMatches";
 import "./live.css";
 
 const defaultCard = { name: "", intro: "", teach: "", learn: "", mode: "线上" };
@@ -164,7 +165,7 @@ export default function LiveApp() {
         <div className="live-account-bar"><span><Users size={17} /> 已登录：{user.email}</span><button className="live-text-button" onClick={() => supabase.auth.signOut()}><LogOut size={16} /> 退出登录</button></div>
         {error && <p className="live-error" role="alert">{error}</p>}
         {!profile || editing ? <ProfileForm key={profile?.id || "new"} user={user} current={profile} onSaved={() => { setEditing(false); setRefreshIndex((n) => n + 1); }} />
-        : <section className="live-card"><div className="live-eyebrow">MY SKILL CARD</div><h2>{profile.name}</h2><p>{profile.intro || "还没有填写介绍。"}</p><div className="live-skills"><div><strong>能教</strong><span>{profile.teach.join(" · ")}</span></div><div><strong>想学</strong><span>{profile.learn.join(" · ")}</span></div></div><button className="button button-outline" onClick={() => setEditing(true)}>编辑技能卡</button></section>}
+        : <><section className="live-card"><div className="live-eyebrow">MY SKILL CARD</div><h2>{profile.name}</h2><p>{profile.intro || "还没有填写介绍。"}</p><div className="live-skills"><div><strong>能教</strong><span>{profile.teach.join(" · ")}</span></div><div><strong>想学</strong><span>{profile.learn.join(" · ")}</span></div></div><button className="button button-outline" onClick={() => setEditing(true)}>编辑技能卡</button></section><LiveMatches profile={profile} /></>}
       </>}
     </main>
   );
