@@ -1190,7 +1190,9 @@ function App() {
         <div className="container">
           <Sparkles size={14} />
           <span>
-            作品演示版 · 人物为虚构示例，发布与申请数据仅保存在当前浏览器
+            {route === "/live"
+              ? "真实互换：账号、技能卡和私聊使用云端存储；游客仍可体验本地演示"
+              : "作品演示版 · 人物为虚构示例，发布与申请数据仅保存在当前浏览器"}
           </span>
         </div>
       </div>
